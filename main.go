@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"context"
+	"go-in-memory-store/client"
 	"log"
 	"log/slog"
 	"net"
+	"time"
 )
 
 const defaultListenAddr = ":5001"
@@ -51,7 +53,16 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handleRawMessage(rawMsg []byte) error {
-	fmt.Println(string(rawMsg))
+	cmd, err := parseCommand(string(rawMsg))
+	if err != nil {
+		return err
+	}
+
+	switch v := cmd.(type) {
+	case SetCommand:
+		slog.Info("somebody want to set a key in to the hash table", "key", v.key, "value", v.val)
+	}
+
 	return nil
 }
 
@@ -86,11 +97,23 @@ func (s *Server) handleConn(conn net.Conn) {
 	s.addPeerCh <- peer
 	slog.Info("new peer connected", "remoteAddr", conn.RemoteAddr())
 	if err := peer.readLoop(); err != nil {
-		slog.Error("peer read error", "err", err, "remoteAddr", conn, conn.RemoteAddr())
+		slog.Error("peer read error", "err", err, "remoteAddr", conn.RemoteAddr())
 	}
 }
 
 func main() {
-	server := NewServer(Config{})
-	log.Fatal(server.Start())
+
+	go func() {
+		server := NewServer(Config{})
+		log.Fatal(server.Start())
+	}()
+	time.Sleep(time.Second)
+
+	c := client.New("localhost:5001")
+
+	if err := c.Set(context.Background(), "foo", "bar"); err != nil {
+		log.Fatal(err)
+	}
+
+	select {} // we are blocking here so the program does not exit!
 }
