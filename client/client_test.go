@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 	"testing"
 	"time"
 )
+
+
 
 func TestNewClient(t *testing.T) {
 	c, err := New("localhost:5001")
