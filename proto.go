@@ -10,6 +10,7 @@ import (
 const (
 	CommandSET    = "set"
 	CommandGET    = "get"
+	CommandDEL    = "del"
 	CommandHELLO  = "hello"
 	CommandClient = "client"
 )
@@ -27,6 +28,10 @@ type HelloCommand struct {
 }
 
 type GetCommand struct {
+	key []byte
+}
+
+type DelCommand struct {
 	key []byte
 }
 

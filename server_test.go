@@ -31,8 +31,6 @@ func TestOfficialRedisClient(t *testing.T) {
 	key := "foo"
 	val := "bar"
 
-	
-
 	if err := rdb.Set(context.Background(), key, val, 0).Err(); err != nil {
 		t.Fatal(err)
 	}
@@ -45,6 +43,12 @@ func TestOfficialRedisClient(t *testing.T) {
 	if newVal != val {
 		t.Fatalf("expected %s but got %s", val, newVal)
 	}
+
+	delResult, err := rdb.Del(context.Background(), key).Result()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("delResult =>", delResult)
 
 }
 

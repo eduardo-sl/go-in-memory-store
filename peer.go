@@ -50,6 +50,10 @@ func (p *Peer) readLoop() error {
 				cmd = GetCommand{
 					key: v.Array()[1].Bytes(),
 				}
+			case CommandDEL:
+				cmd = DelCommand{
+					key: v.Array()[1].Bytes(),
+				}
 			case CommandSET:
 				cmd = SetCommand{
 					key: v.Array()[1].Bytes(),
