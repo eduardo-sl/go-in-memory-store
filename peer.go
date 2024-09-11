@@ -38,22 +38,35 @@ func (p *Peer) readLoop() error {
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		var cmd Command
 		if v.Type() == resp.Array {
-			cmd := v.Array()[0]
-			switch cmd.String() {
-			case CommandGET:
-			case CommandSET:
-			case CommandHELLO:
-				cmd := HelloCommand{
+			rawCMD := v.Array()[0]
+			switch rawCMD.String() {
+			case CommandClient:
+				cmd = ClientCommand{
 					value: v.Array()[1].String(),
 				}
-				p.msgCh <- Message{
-					cmd:  cmd,
-					peer: p,
+			case CommandGET:
+				cmd = GetCommand{
+					key: v.Array()[1].Bytes(),
 				}
+			case CommandSET:
+				cmd = SetCommand{
+					key: v.Array()[1].Bytes(),
+					val: v.Array()[2].Bytes(),
+				}
+			case CommandHELLO:
+				cmd = HelloCommand{
+					value: v.Array()[1].String(),
+				}
+			default:
+				fmt.Println("got this unhandled command", rawCMD)
 			}
-			fmt.Println("this should be the cmd", v.Array()[0])
+			p.msgCh <- Message{
+				cmd:  cmd,
+				peer: p,
+			}
+
 		}
 	}
 	return nil
