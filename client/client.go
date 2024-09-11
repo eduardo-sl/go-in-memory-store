@@ -30,7 +30,7 @@ func (c *Client) Set(ctx context.Context, key string, val string) error {
 	var buf bytes.Buffer
 	wr := resp.NewWriter(&buf)
 	wr.WriteArray([]resp.Value{
-		resp.StringValue("SET"),
+		resp.StringValue("set"),
 		resp.StringValue(key),
 		resp.StringValue(val),
 	})
@@ -43,7 +43,7 @@ func (c *Client) Get(ctx context.Context, key string) (string, error) {
 	var buf bytes.Buffer
 	wr := resp.NewWriter(&buf)
 	wr.WriteArray([]resp.Value{
-		resp.StringValue("GET"),
+		resp.StringValue("get"),
 		resp.StringValue(key),
 	})
 
