@@ -80,6 +80,13 @@ func (s *Server) handleMessage(msg Message) error {
 			WriteString("OK"); err != nil {
 			return err
 		}
+	case DelCommand:
+		s.kv.Del(v.key)
+		if err := resp.
+			NewWriter(msg.peer.conn).
+			WriteString(string("1")); err != nil {
+			return err
+		}
 	case GetCommand:
 		val, ok := s.kv.Get(v.key)
 		if !ok {
