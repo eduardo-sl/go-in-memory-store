@@ -11,6 +11,7 @@ const (
 	CommandSET    = "set"
 	CommandGET    = "get"
 	CommandDEL    = "del"
+	CommandExists = "exists"
 	CommandHELLO  = "hello"
 	CommandClient = "client"
 )
@@ -31,7 +32,14 @@ type GetCommand struct {
 	key []byte
 }
 
+type Value struct {
+	key []byte
+}
 type DelCommand struct {
+	val []Value
+}
+
+type ExistsCommand struct {
 	key []byte
 }
 

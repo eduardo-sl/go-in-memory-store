@@ -44,11 +44,33 @@ func TestOfficialRedisClient(t *testing.T) {
 		t.Fatalf("expected %s but got %s", val, newVal)
 	}
 
+	existsVal, err := rdb.Exists(context.Background(), key).Result()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if existsVal != 1 {
+		t.Fatalf("expected 1 but got %d", existsVal)
+	}
+
+	if err := rdb.Set(context.Background(), key+"2", val, 0).Err(); err != nil {
+		t.Fatal(err)
+	}
+
 	delResult, err := rdb.Del(context.Background(), key, key+"1", key+"2").Result()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println("del =>", delResult)
+	if delResult != 2 {
+		t.Fatalf("expected 2 but got %d", delResult)
+	}
+
+	existsVal, err = rdb.Exists(context.Background(), key).Result()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if existsVal != 0 {
+		t.Fatalf("expected 0 but got %d", existsVal)
+	}
 
 }
 

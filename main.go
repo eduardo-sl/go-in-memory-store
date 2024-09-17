@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net"
 	"reflect"
+	"strconv"
 )
 
 const defaultListenAddr = ":5001"
@@ -81,10 +82,28 @@ func (s *Server) handleMessage(msg Message) error {
 			return err
 		}
 	case DelCommand:
-		s.kv.Del(v.key)
+		deletCount := 0
+		for _, v := range v.val {
+			ok := s.kv.Del(v.key)
+			if ok {
+				deletCount++
+			}
+		}
 		if err := resp.
 			NewWriter(msg.peer.conn).
-			WriteString(string("1")); err != nil {
+			WriteString(strconv.Itoa(deletCount)); err != nil {
+			return err
+		}
+	case ExistsCommand:
+		_, ok := s.kv.Get(v.key)
+		result := "0"
+		if ok {
+			result = "1"
+		}
+
+		if err := resp.
+			NewWriter(msg.peer.conn).
+			WriteString(result); err != nil {
 			return err
 		}
 	case GetCommand:

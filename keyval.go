@@ -27,8 +27,13 @@ func (kv *KV) Get(key []byte) ([]byte, bool) {
 	return val, ok
 }
 
-func (kv *KV) Del(key []byte) {
+func (kv *KV) Del(key []byte) bool {
 	kv.mu.RLock()
 	defer kv.mu.RUnlock()
+	_, ok := kv.data[string(key)]
+	if !ok {
+		return false
+	}
 	delete(kv.data, string(key))
+	return true
 }
