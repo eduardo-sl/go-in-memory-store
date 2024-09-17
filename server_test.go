@@ -72,6 +72,11 @@ func TestOfficialRedisClient(t *testing.T) {
 		t.Fatalf("expected 0 but got %d", existsVal)
 	}
 
+	_, err = rdb.Get(context.Background(), key+"bar").Result()
+	if err.Error() != "redis: nil" {
+		t.Fatal(err)
+	}
+
 }
 
 func TestRespWriteMap(t *testing.T) {

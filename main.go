@@ -109,7 +109,12 @@ func (s *Server) handleMessage(msg Message) error {
 	case GetCommand:
 		val, ok := s.kv.Get(v.key)
 		if !ok {
-			return fmt.Errorf("key not found")
+			if err := resp.
+				NewWriter(msg.peer.conn).
+				WriteNull(); err != nil {
+				return err
+			}
+			return nil
 		}
 		if err := resp.
 			NewWriter(msg.peer.conn).
