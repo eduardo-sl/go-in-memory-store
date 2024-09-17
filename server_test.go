@@ -44,11 +44,11 @@ func TestOfficialRedisClient(t *testing.T) {
 		t.Fatalf("expected %s but got %s", val, newVal)
 	}
 
-	delResult, err := rdb.Del(context.Background(), key).Result()
+	delResult, err := rdb.Del(context.Background(), key, key+"1", key+"2").Result()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println("delResult =>", delResult)
+	fmt.Println("del =>", delResult)
 
 }
 
