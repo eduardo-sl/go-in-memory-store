@@ -2,21 +2,26 @@ package main
 
 import "sync"
 
+type Data struct {
+	val []byte
+	ttl int64
+}
+
 type KV struct {
 	mu   sync.RWMutex
-	data map[string][]byte
+	data map[string]Data
 }
 
 func NewKV() *KV {
 	return &KV{
-		data: make(map[string][]byte),
+		data: make(map[string]Data),
 	}
 }
 
 func (kv *KV) Set(key, val []byte) error {
 	kv.mu.Lock()
 	defer kv.mu.Unlock()
-	kv.data[string(key)] = []byte(val)
+	kv.data[string(key)] = Data{val: []byte(val), ttl: 0}
 	return nil
 }
 
@@ -24,7 +29,7 @@ func (kv *KV) Get(key []byte) ([]byte, bool) {
 	kv.mu.RLock()
 	defer kv.mu.RUnlock()
 	val, ok := kv.data[string(key)]
-	return val, ok
+	return val.val, ok
 }
 
 func (kv *KV) Del(key []byte) bool {
