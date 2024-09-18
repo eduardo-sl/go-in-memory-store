@@ -67,6 +67,11 @@ func (p *Peer) readLoop() error {
 				cmd = ExistsCommand{
 					key: v.Array()[1].Bytes(),
 				}
+			case CommandExpire:
+				cmd = ExpireCommand{
+					key: v.Array()[1].Bytes(),
+					exp: int64(v.Array()[2].Integer()),
+				}
 			case CommandHELLO:
 				cmd = HelloCommand{
 					value: v.Array()[1].String(),

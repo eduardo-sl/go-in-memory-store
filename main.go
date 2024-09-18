@@ -121,6 +121,18 @@ func (s *Server) handleMessage(msg Message) error {
 			WriteString(string(val)); err != nil {
 			return err
 		}
+	case ExpireCommand:
+		ok := s.kv.Expire(v.key, v.exp)
+		result := "0"
+		if ok {
+			result = "1"
+		}
+
+		if err := resp.
+			NewWriter(msg.peer.conn).
+			WriteString(result); err != nil {
+			return err
+		}
 	case HelloCommand:
 		spec := map[string]string{
 			"server": "goims",

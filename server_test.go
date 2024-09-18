@@ -31,7 +31,14 @@ func TestOfficialRedisClient(t *testing.T) {
 	key := "foo"
 	val := "bar"
 
+	// set key
 	if err := rdb.Set(context.Background(), key, val, 0).Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	// get key
+	_, err := rdb.Get(context.Background(), key+"bar").Result()
+	if err.Error() != "redis: nil" {
 		t.Fatal(err)
 	}
 
@@ -44,6 +51,7 @@ func TestOfficialRedisClient(t *testing.T) {
 		t.Fatalf("expected %s but got %s", val, newVal)
 	}
 
+	// exists key
 	existsVal, err := rdb.Exists(context.Background(), key).Result()
 	if err != nil {
 		t.Fatal(err)
@@ -56,6 +64,7 @@ func TestOfficialRedisClient(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// del key
 	delResult, err := rdb.Del(context.Background(), key, key+"1", key+"2").Result()
 	if err != nil {
 		t.Fatal(err)
@@ -72,11 +81,19 @@ func TestOfficialRedisClient(t *testing.T) {
 		t.Fatalf("expected 0 but got %d", existsVal)
 	}
 
-	_, err = rdb.Get(context.Background(), key+"bar").Result()
-	if err.Error() != "redis: nil" {
+	// expire key
+
+	if err := rdb.Set(context.Background(), key, val, 0).Err(); err != nil {
 		t.Fatal(err)
 	}
 
+	expirateSuccess, err := rdb.Expire(context.Background(), key, 10*time.Second).Result()
+	if !expirateSuccess {
+		t.Fatalf("expected true but got %t", expirateSuccess)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestRespWriteMap(t *testing.T) {

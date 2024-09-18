@@ -12,6 +12,7 @@ const (
 	CommandGET    = "get"
 	CommandDEL    = "del"
 	CommandExists = "exists"
+	CommandExpire = "expire"
 	CommandHELLO  = "hello"
 	CommandClient = "client"
 )
@@ -41,6 +42,11 @@ type DelCommand struct {
 
 type ExistsCommand struct {
 	key []byte
+}
+
+type ExpireCommand struct {
+	key []byte
+	exp int64
 }
 
 func respWriteMap(m map[string]string) []byte {
